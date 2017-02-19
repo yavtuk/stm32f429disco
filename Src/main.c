@@ -41,25 +41,55 @@
   ******************************************************************************
   */
 /* Includes ------------------------------------------------------------------*/
+#include <string.h>
 #include "main.h"
 #include "stm32f4xx_hal.h"
 #include "cmsis_os.h"
 
 /* Private variables ---------------------------------------------------------*/
 UART_HandleTypeDef huart1;
+DMA_HandleTypeDef hdma_usart1_tx;
+__IO ITStatus UartReady = RESET;
 
 osThreadId defaultTaskHandle;
 osThreadId mySender1Handle;
 osThreadId mySender2Handle;
+osThreadId mySender3Handle;
+osThreadId mySender4Handle;
+osThreadId mySender5Handle;
+osThreadId mySender6Handle;
+osThreadId mySender7Handle;
+osThreadId mySender8Handle;
+osThreadId mySender9Handle;
+osThreadId mySender10Handle;
+
+
+
+osMessageQId myQueue01Handle;
+typedef struct
+{
+    uint8_t *ptr;
+    size_t size;
+}__print_msg;
+
 
 /* Private function prototypes -----------------------------------------------*/
 void SystemClock_Config(void);
 void Error_Handler(void);
 static void MX_GPIO_Init(void);
+static void MX_DMA_Init(void);
 static void MX_USART1_UART_Init(void);
 void StartDefaultTask(void const * argument);
+void StartTask01(void const * argument);
 void StartTask02(void const * argument);
 void StartTask03(void const * argument);
+void StartTask04(void const * argument);
+void StartTask05(void const * argument);
+void StartTask06(void const * argument);
+void StartTask07(void const * argument);
+void StartTask08(void const * argument);
+void StartTask09(void const * argument);
+void StartTask10(void const * argument);
 
 int main(void)
 {
@@ -71,6 +101,7 @@ int main(void)
 
   /* Initialize all configured peripherals */
   MX_GPIO_Init();
+  MX_DMA_Init();
   MX_USART1_UART_Init();
 
   /* Create the thread(s) */
@@ -79,13 +110,49 @@ int main(void)
   defaultTaskHandle = osThreadCreate(osThread(defaultTask), NULL);
 
   /* definition and creation of mySender1 */
-  osThreadDef(mySender1, StartTask02, osPriorityIdle, 0, 128);
+  osThreadDef(mySender1, StartTask01, osPriorityNormal, 0, 128);
   mySender1Handle = osThreadCreate(osThread(mySender1), NULL);
 
   /* definition and creation of mySender2 */
-  osThreadDef(mySender2, StartTask03, osPriorityIdle, 0, 128);
+  osThreadDef(mySender2, StartTask02, osPriorityNormal, 0, 128);
   mySender2Handle = osThreadCreate(osThread(mySender2), NULL);
 
+  /* definition and creation of mySender2 */
+  osThreadDef(mySender3, StartTask03, osPriorityNormal, 0, 128);
+  mySender3Handle = osThreadCreate(osThread(mySender3), NULL);
+
+  /* definition and creation of mySender2 */
+  osThreadDef(mySender4, StartTask04, osPriorityNormal, 0, 128);
+  mySender4Handle = osThreadCreate(osThread(mySender4), NULL);
+
+  /* definition and creation of mySender2 */
+  osThreadDef(mySender5, StartTask05, osPriorityNormal, 0, 128);
+  mySender5Handle = osThreadCreate(osThread(mySender5), NULL);
+
+  /* definition and creation of mySender2 */
+  osThreadDef(mySender6, StartTask06, osPriorityNormal, 0, 128);
+  mySender6Handle = osThreadCreate(osThread(mySender6), NULL);
+
+  /* definition and creation of mySender2 */
+  osThreadDef(mySender7, StartTask07, osPriorityNormal, 0, 128);
+  mySender7Handle = osThreadCreate(osThread(mySender7), NULL);
+
+  /* definition and creation of mySender2 */
+  osThreadDef(mySender8, StartTask08, osPriorityNormal, 0, 128);
+  mySender8Handle = osThreadCreate(osThread(mySender8), NULL);
+
+  /* definition and creation of mySender2 */
+  osThreadDef(mySender9, StartTask09, osPriorityNormal, 0, 128);
+  mySender9Handle = osThreadCreate(osThread(mySender9), NULL);
+
+  /* definition and creation of mySender2 */
+  osThreadDef(mySender10, StartTask10, osPriorityNormal, 0, 128);
+  mySender10Handle = osThreadCreate(osThread(mySender10), NULL);
+
+  /* Create the queue(s) */
+  /* definition and creation of myQueue01 */
+  osMessageQDef(myQueue01, 5, __print_msg);
+  myQueue01Handle = osMessageCreate(osMessageQ(myQueue01), NULL);
   /* Start scheduler */
   osKernelStart();
   
@@ -154,24 +221,27 @@ void SystemClock_Config(void)
       /* SysTick_IRQn interrupt configuration */
       HAL_NVIC_SetPriority(SysTick_IRQn, 15, 0);
 }
-
+static void MX_DMA_Init(void)
+{
+    /* DMA controller clock enable */
+    __HAL_RCC_DMA2_CLK_ENABLE();
+}
 /* USART1 init function */
 static void MX_USART1_UART_Init(void)
 {
 
-  huart1.Instance = USART1;
-  huart1.Init.BaudRate = 115200;
-  huart1.Init.WordLength = UART_WORDLENGTH_8B;
-  huart1.Init.StopBits = UART_STOPBITS_1;
-  huart1.Init.Parity = UART_PARITY_NONE;
-  huart1.Init.Mode = UART_MODE_TX_RX;
-  huart1.Init.HwFlowCtl = UART_HWCONTROL_NONE;
-  huart1.Init.OverSampling = UART_OVERSAMPLING_16;
-  if (HAL_UART_Init(&huart1) != HAL_OK)
-  {
-    Error_Handler();
-  }
-
+    huart1.Instance = USART1;
+    huart1.Init.BaudRate = 115200;
+    huart1.Init.WordLength = UART_WORDLENGTH_8B;
+    huart1.Init.StopBits = UART_STOPBITS_1;
+    huart1.Init.Parity = UART_PARITY_NONE;
+    huart1.Init.Mode = UART_MODE_TX_RX;
+    huart1.Init.HwFlowCtl = UART_HWCONTROL_NONE;
+    huart1.Init.OverSampling = UART_OVERSAMPLING_16;
+    if (HAL_UART_Init(&huart1) != HAL_OK)
+    {
+      Error_Handler();
+    }
 }
 
 /** Configure pins as 
@@ -499,42 +569,189 @@ static void MX_GPIO_Init(void)
 /* StartDefaultTask function */
 void StartDefaultTask(void const * argument)
 {
-
+  __print_msg msg;
   /* USER CODE BEGIN 5 */
   /* Infinite loop */
   for(;;)
   {
-    osDelay(1000);
+      xQueueReceive( myQueue01Handle, &msg, osWaitForever );
+      if(HAL_UART_Transmit_DMA(&huart1, msg.ptr, msg.size) != HAL_OK)
+      {
+        Error_Handler();
+      }
+
+      while( UartReady != SET) {}
+      UartReady = RESET;
   }
   /* USER CODE END 5 */ 
 }
-
+void HAL_UART_TxCpltCallback(UART_HandleTypeDef *huart)
+{
+    HAL_GPIO_TogglePin(GPIOG, LD4_Pin);
+    UartReady = SET;
+    __HAL_UART_FLUSH_DRREGISTER(&huart1);
+    HAL_UART_DMAStop(&huart1);
+}
 /* StartTask02 function */
+void StartTask01(void const * argument)
+{
+  uint8_t msg[128];
+  memset(msg, '*', 126);
+  msg[126] = '\r';
+  msg[127] = '\n';
+  __print_msg msgTask1;
+  msgTask1.ptr = msg;
+  msgTask1.size = 128;
+  for(;;)
+  {
+      xQueueSend( myQueue01Handle, &msgTask1, osWaitForever );
+      osDelay(1);
+  }
+
+}
+
 void StartTask02(void const * argument)
 {
-  /* USER CODE BEGIN StartTask02 */
-  /* Infinite loop */
-  for(;;)
-  {
-      HAL_GPIO_TogglePin(GPIOG, LD4_Pin);
-      osDelay(1000);
-  }
-  /* USER CODE END StartTask02 */
-}
+    uint8_t msg[128];
+    memset(msg, '=', 126);
+    msg[126] = '\r';
+    msg[127] = '\n';
+    __print_msg msgTask1;
+    msgTask1.ptr = msg;
+    msgTask1.size = 128;
+    for(;;)
+    {
+        xQueueSend( myQueue01Handle, &msgTask1, osWaitForever );
+        osDelay(1);
+    }
 
-/* StartTask03 function */
+}
 void StartTask03(void const * argument)
 {
-  /* USER CODE BEGIN StartTask03 */
-  /* Infinite loop */
-  for(;;)
-  {
-      HAL_GPIO_TogglePin(GPIOG, LD3_Pin);
-      osDelay(200);
-  }
-  /* USER CODE END StartTask03 */
+    uint8_t msg[128];
+    memset(msg, '3', 126);
+    msg[126] = '\r';
+    msg[127] = '\n';
+    __print_msg msgTask1;
+    msgTask1.ptr = msg;
+    msgTask1.size = 128;
+    for(;;)
+    {
+        xQueueSend( myQueue01Handle, &msgTask1, osWaitForever );
+        osDelay(1);
+    }
+
+}
+void StartTask04(void const * argument)
+{
+    uint8_t msg[128];
+    memset(msg, '4', 126);
+    msg[126] = '\r';
+    msg[127] = '\n';
+    __print_msg msgTask1;
+    msgTask1.ptr = msg;
+    msgTask1.size = 128;
+    for(;;)
+    {
+        xQueueSend( myQueue01Handle, &msgTask1, osWaitForever );
+        osDelay(1);
+    }
+
 }
 
+void StartTask05(void const * argument)
+{
+    uint8_t msg[128];
+    memset(msg, '5', 126);
+    msg[126] = '\r';
+    msg[127] = '\n';
+    __print_msg msgTask1;
+    msgTask1.ptr = msg;
+    msgTask1.size = 128;
+    for(;;)
+    {
+        xQueueSend( myQueue01Handle, &msgTask1, osWaitForever );
+        osDelay(1);
+    }
+}
+
+void StartTask06(void const * argument)
+{
+    uint8_t msg[128];
+    memset(msg, '<', 126);
+    msg[126] = '\r';
+    msg[127] = '\n';
+    __print_msg msgTask1;
+    msgTask1.ptr = msg;
+    msgTask1.size = 128;
+    for(;;)
+    {
+        xQueueSend( myQueue01Handle, &msgTask1, osWaitForever );
+        osDelay(1);
+    }
+}
+void StartTask07(void const * argument)
+{
+    uint8_t msg[128];
+    memset(msg, '>', 126);
+    msg[126] = '\r';
+    msg[127] = '\n';
+    __print_msg msgTask1;
+    msgTask1.ptr = msg;
+    msgTask1.size = 128;
+    for(;;)
+    {
+        xQueueSend( myQueue01Handle, &msgTask1, osWaitForever );
+        osDelay(1);
+    }
+}
+
+void StartTask08(void const * argument)
+{
+    uint8_t msg[128];
+    memset(msg, '\\', 126);
+    msg[126] = '\r';
+    msg[127] = '\n';
+    __print_msg msgTask1;
+    msgTask1.ptr = msg;
+    msgTask1.size = 128;
+    for(;;)
+    {
+        xQueueSend( myQueue01Handle, &msgTask1, osWaitForever );
+        osDelay(1);
+    }
+}
+
+void StartTask09(void const * argument)
+{
+    uint8_t msg[128];
+    memset(msg, '/', 126);
+    msg[126] = '\r';
+    msg[127] = '\n';
+    __print_msg msgTask1;
+    msgTask1.ptr = msg;
+    msgTask1.size = 128;
+    for(;;)
+    {
+        xQueueSend( myQueue01Handle, &msgTask1, osWaitForever );
+        osDelay(1);
+    }
+}
+void StartTask10(void const * argument)
+{
+    uint8_t msg[128];
+    memset(msg, 'A', 126);
+    msg[126] = '\r';
+    msg[127] = '\n';
+    __print_msg msgTask1;
+    msgTask1.ptr = msg;
+    msgTask1.size = 128;
+    for(;;)
+    {
+        xQueueSend( myQueue01Handle, &msgTask1, osWaitForever );
+        osDelay(1);
+    }
+}
 /**
   * @brief  This function is executed in case of error occurrence.
   * @param  None

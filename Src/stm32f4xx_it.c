@@ -36,11 +36,9 @@
 #include "stm32f4xx_it.h"
 #include "cmsis_os.h"
 
-/* USER CODE BEGIN 0 */
-
-/* USER CODE END 0 */
 
 /* External variables --------------------------------------------------------*/
+extern DMA_HandleTypeDef hdma_usart1_tx;
 
 /******************************************************************************/
 /*            Cortex-M4 Processor Interruption and Exception Handlers         */ 
@@ -51,14 +49,8 @@
 */
 void SysTick_Handler(void)
 {
-  /* USER CODE BEGIN SysTick_IRQn 0 */
-
-  /* USER CODE END SysTick_IRQn 0 */
-  HAL_IncTick();
-  osSystickHandler();
-  /* USER CODE BEGIN SysTick_IRQn 1 */
-
-  /* USER CODE END SysTick_IRQn 1 */
+    HAL_IncTick();
+    osSystickHandler();
 }
 
 /******************************************************************************/
@@ -68,7 +60,12 @@ void SysTick_Handler(void)
 /* please refer to the startup file (startup_stm32f4xx.s).                    */
 /******************************************************************************/
 
-/* USER CODE BEGIN 1 */
-
-/* USER CODE END 1 */
+/**
+* @brief This function handles DMA2 stream7 global interrupt.
+*/
+void DMA2_Stream7_IRQHandler(void)
+{
+    HAL_NVIC_ClearPendingIRQ(DMA2_Stream2_IRQn);
+    HAL_DMA_IRQHandler(&hdma_usart1_tx);
+}
 /************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/

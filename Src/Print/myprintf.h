@@ -1,0 +1,15 @@
+/*
+ * myprintf.h
+ *
+ *  Created on: 28 апр. 2015 г.
+ *      Author: ALEX
+ */
+
+#ifndef SRC_PRINT_MYPRINTF_H_
+#define SRC_PRINT_MYPRINTF_H_
+
+#define STDOUT_USART BOARD_CLI_UART_INSTANCE
+#define STDERR_USART BOARD_CLI_UART_INSTANCE
+#define STDIN_USART BOARD_CLI_UART_INSTANCE
+
+#endif /* SRC_PRINT_MYPRINTF_H_ */
