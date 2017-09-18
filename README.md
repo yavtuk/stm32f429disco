@@ -1,5 +1,7 @@
 # stm32f429disco
 
+It's empty project for fast create
+
 Eclipse Cube FreeRTOS STM32F429DISCO
 
 This empty project for fast create a next project. 
